@@ -1,0 +1,29 @@
+FROM balenalib/%%BALENA_ARCH%%-alpine:3.11
+
+# Audio block setup
+
+ENV PULSE_SERVER=tcp:localhost:4317
+RUN curl -sL https://raw.githubusercontent.com/balenablocks/audio/master/scripts/alsa-bridge/alpine-setup.sh | sh
+
+RUN install_packages \
+       mopidy \
+       py3-pip
+
+
+# Install mopidy-plugins
+RUN pip3 install \
+       Mopidy-Autoplay \
+       Mopidy-Local \
+       Mopidy-MPD \
+       Mopidy-Iris \
+       Mopidy-TuneIn
+
+RUN mkdir -p /config \
+    && ln -sf /usr/lib/libpython3.8.so.1.0 /usr/lib/libpython3.8.so
+
+COPY start.sh /usr/src/
+COPY mopidy.cfg /config/
+
+EXPOSE 6680 6600
+
+CMD [ "/bin/bash", "/usr/src/start.sh" ]

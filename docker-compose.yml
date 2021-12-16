@@ -2,6 +2,8 @@ version: '2'
 
 volumes:
   spotifycache:
+  mopidycache:
+  mopidydata:
 
 services:
 
@@ -76,3 +78,17 @@ services:
     network_mode: host
     volumes:
       - spotifycache:/var/cache/raspotify
+
+  mopidy:
+    build: ./plugins/mopidy
+    restart: on-failure
+    network_mode: host
+    privileged: true
+    ports:
+      - 6680:6680
+      - 6600:6600
+    labels:
+      io.balena.features.dbus: 1
+    volumes:
+      - mopidycache:/cache
+      - mopidydata:/data
